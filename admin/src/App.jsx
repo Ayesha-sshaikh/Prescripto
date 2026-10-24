@@ -5,21 +5,21 @@ import 'react-toastify/dist/ReactToastify.css'
 import { AdminContext } from './context/AdminContext.jsx'
 import { DoctorContext } from './context/DoctorContext.jsx'
 import Login from './pages/Login.jsx'
-import Placeholder from './pages/Placeholder.jsx'
+import Navbar from './components/Navbar.jsx'
+import Sidebar from './components/Sidebar.jsx'
+import Dashboard from './pages/Admin/Dashboard.jsx'
+import AllAppointments from './pages/Admin/AllAppointments.jsx'
+import AddDoctor from './pages/Admin/AddDoctor.jsx'
+import DoctorsList from './pages/Admin/DoctorsList.jsx'
+import DoctorDashboard from './pages/Doctor/DoctorDashboard.jsx'
+import DoctorAppointments from './pages/Doctor/DoctorAppointments.jsx'
+import DoctorProfile from './pages/Doctor/DoctorProfile.jsx'
 
-// TODO: add <Navbar /> (with logout) and <Sidebar /> once logged in.
-// TODO: replace each <Placeholder /> with its real page component in src/pages/.
 const App = () => {
-  const { aToken, setAToken } = useContext(AdminContext)
-  const { dToken, setDToken } = useContext(DoctorContext)
+  const { aToken } = useContext(AdminContext)
+  const { dToken } = useContext(DoctorContext)
 
-  const logout = () => {
-    localStorage.removeItem('aToken')
-    localStorage.removeItem('dToken')
-    setAToken('')
-    setDToken('')
-  }
-
+  // Not logged in: show the login screen only
   if (!aToken && !dToken) {
     return (
       <div className="mx-4 sm:mx-[10%]">
@@ -30,26 +30,29 @@ const App = () => {
   }
 
   return (
-    <div className="mx-4 sm:mx-[5%]">
+    <div className="bg-[#f8f9fd] min-h-screen">
       <ToastContainer />
-      <div className="flex justify-between items-center py-3 border-b">
-        <p className="font-semibold text-primary">Prescripto {aToken ? 'Admin' : 'Doctor'}</p>
-        <button onClick={logout} className="bg-primary text-white text-sm px-6 py-1.5 rounded-full">
-          Logout
-        </button>
+      <Navbar />
+      <div className="flex items-start">
+        <Sidebar />
+        <div className="flex-1 min-w-0">
+          <Routes>
+            <Route
+              path="/"
+              element={<Navigate to={aToken ? '/admin-dashboard' : '/doctor-dashboard'} />}
+            />
+            {/* Admin routes */}
+            <Route path="/admin-dashboard" element={<Dashboard />} />
+            <Route path="/all-appointments" element={<AllAppointments />} />
+            <Route path="/add-doctor" element={<AddDoctor />} />
+            <Route path="/doctor-list" element={<DoctorsList />} />
+            {/* Doctor routes */}
+            <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+            <Route path="/doctor-appointments" element={<DoctorAppointments />} />
+            <Route path="/doctor-profile" element={<DoctorProfile />} />
+          </Routes>
+        </div>
       </div>
-      <Routes>
-        {/* Admin routes */}
-        <Route path="/" element={<Navigate to={aToken ? '/admin-dashboard' : '/doctor-dashboard'} />} />
-        <Route path="/admin-dashboard" element={<Placeholder name="Admin Dashboard" />} />
-        <Route path="/all-appointments" element={<Placeholder name="All Appointments" />} />
-        <Route path="/add-doctor" element={<Placeholder name="Add Doctor" />} />
-        <Route path="/doctor-list" element={<Placeholder name="Doctors List" />} />
-        {/* Doctor routes */}
-        <Route path="/doctor-dashboard" element={<Placeholder name="Doctor Dashboard" />} />
-        <Route path="/doctor-appointments" element={<Placeholder name="Doctor Appointments" />} />
-        <Route path="/doctor-profile" element={<Placeholder name="Doctor Profile" />} />
-      </Routes>
     </div>
   )
 }
